@@ -7,8 +7,7 @@ import { copy } from "@/lib/copy";
 const { finalCta } = copy;
 
 // TODO: replace with real checkout URLs before deploying
-const BASE_CHECKOUT_URL_1 = "https://www.oriopay.app/p/proteinski-obroci";
-const BASE_CHECKOUT_URL_2 = "https://www.oriopay.app/p/proteinski-obroci";
+const BASE_CHECKOUT_URL = "https://www.oriopay.app/p/proteinski-obroci";
 
 function buildCheckoutUrl(baseUrl) {
   try {
@@ -28,16 +27,10 @@ function buildCheckoutUrl(baseUrl) {
 }
 
 export default function FinalCta() {
-  const [checkoutUrls, setCheckoutUrls] = useState([
-    BASE_CHECKOUT_URL_1,
-    BASE_CHECKOUT_URL_2,
-  ]);
+  const [checkoutUrl, setCheckoutUrl] = useState(BASE_CHECKOUT_URL);
 
   useEffect(() => {
-    setCheckoutUrls([
-      buildCheckoutUrl(BASE_CHECKOUT_URL_1),
-      buildCheckoutUrl(BASE_CHECKOUT_URL_2),
-    ]);
+    setCheckoutUrl(buildCheckoutUrl(BASE_CHECKOUT_URL));
   }, []);
 
   function handleBeginCheckout() {
@@ -48,6 +41,9 @@ export default function FinalCta() {
       fbq("track", "InitiateCheckout");
     }
   }
+
+  // Tomamos únicamente el primer paquete (el de la oferta/más barato)
+  const pkg = finalCta.packages[0];
 
   return (
     <section
@@ -87,82 +83,77 @@ export default function FinalCta() {
           />
         </div>
 
-        {/* Two pricing cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {finalCta.packages.map((pkg, idx) => (
-            <div
-              key={idx}
-              className="bg-white rounded-3xl shadow-2xl border-2 border-[#8cbc36] overflow-hidden"
-            >
-              {/* Card header */}
-              <div className="bg-[#8cbc36] px-6 py-5 text-center">
-                <h3 className="text-xl font-black text-white">{pkg.name}</h3>
-                <p className="text-white/80 text-sm">{pkg.subtitle}</p>
-              </div>
-
-              <div className="px-6 py-6">
-                {/* Product name */}
-                <h4 className="font-black text-[#1a1a1a] text-lg mb-4 text-center">
-                  {pkg.productName}
-                </h4>
-
-                {/* Price block */}
-                <div className="text-center mb-6">
-                  {pkg.priceOld && (
-                    <div className="flex items-center justify-center gap-2 mb-1">
-                      <span className="text-gray-400 text-sm">{pkg.priceOldLabel}</span>
-                      <span className="text-gray-400 line-through text-lg">
-                        {pkg.priceOld}
-                      </span>
-                    </div>
-                  )}
-                  {pkg.priceNewLabel && (
-                    <p className="text-gray-400 text-sm mb-1">{pkg.priceNewLabel}</p>
-                  )}
-                  <div className="text-4xl font-black text-[#8cbc36] leading-none mb-1">
-                    {pkg.priceNew}
-                  </div>
-                  {pkg.pricePerMonth && (
-                    <p className="text-gray-500 text-sm">
-                      {pkg.pricePerMonth}<span className="text-gray-400">{pkg.pricePerMonthLabel}</span>
-                    </p>
-                  )}
-                </div>
-
-                {/* What you receive */}
-                <p className="font-bold text-[#1a1a1a] text-sm mb-3">
-                  {pkg.whatYouReceiveLabel}
-                </p>
-
-                {/* Items list */}
-                <ul className="flex flex-col gap-2.5 mb-6">
-                  {pkg.items.map((item, i) => (
-                    <li key={i} className="flex items-start gap-2.5">
-                      <CircleCheckBig
-                        size={16}
-                        className="text-[#8cbc36] flex-shrink-0 mt-0.5"
-                      />
-                      <span className="text-gray-700 text-sm">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* Payment note */}
-                <p className="text-gray-400 text-xs text-center mb-5">
-                  {pkg.paymentNote}
-                </p>
-
-                {/* CTA button */}
-                <a
-                  href={checkoutUrls[idx]}
-                  onClick={handleBeginCheckout}
-                  className="animate-pulse-glow block w-full bg-[#8cbc36] hover:bg-[#6e9628] text-white font-black text-base py-4 rounded-2xl text-center transition-all duration-200 hover:scale-[1.02] shadow-xl shadow-[#8cbc36]/30 tracking-wide"
-                >
-                  {pkg.cta}
-                </a>
-              </div>
+        {/* Single pricing card */}
+        <div className="max-w-md mx-auto">
+          <div className="bg-white rounded-3xl shadow-2xl border-2 border-[#8cbc36] overflow-hidden">
+            {/* Card header */}
+            <div className="bg-[#8cbc36] px-6 py-5 text-center">
+              <h3 className="text-xl font-black text-white">{pkg.name}</h3>
+              <p className="text-white/80 text-sm">{pkg.subtitle}</p>
             </div>
-          ))}
+
+            <div className="px-6 py-6">
+              {/* Product name */}
+              <h4 className="font-black text-[#1a1a1a] text-lg mb-4 text-center">
+                {pkg.productName}
+              </h4>
+
+              {/* Price block */}
+              <div className="text-center mb-6">
+                {pkg.priceOld && (
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <span className="text-gray-400 text-sm">{pkg.priceOldLabel}</span>
+                    <span className="text-gray-400 line-through text-lg">
+                      {pkg.priceOld}
+                    </span>
+                  </div>
+                )}
+                {pkg.priceNewLabel && (
+                  <p className="text-gray-400 text-sm mb-1">{pkg.priceNewLabel}</p>
+                )}
+                <div className="text-4xl font-black text-[#8cbc36] leading-none mb-1">
+                  {pkg.priceNew}
+                </div>
+                {pkg.pricePerMonth && (
+                  <p className="text-gray-500 text-sm">
+                    {pkg.pricePerMonth}<span className="text-gray-400">{pkg.pricePerMonthLabel}</span>
+                  </p>
+                )}
+              </div>
+
+              {/* What you receive */}
+              <p className="font-bold text-[#1a1a1a] text-sm mb-3">
+                {pkg.whatYouReceiveLabel}
+              </p>
+
+              {/* Items list */}
+              <ul className="flex flex-col gap-2.5 mb-6">
+                {pkg.items.map((item, i) => (
+                  <li key={i} className="flex items-start gap-2.5">
+                    <CircleCheckBig
+                      size={16}
+                      className="text-[#8cbc36] flex-shrink-0 mt-0.5"
+                    />
+                    <span className="text-gray-700 text-sm">{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Payment note */}
+              <p className="text-gray-400 text-xs text-center mb-5">
+                {pkg.paymentNote}
+              </p>
+
+              {/* CTA button */}
+              <a
+                href={checkoutUrl}
+                onClick={handleBeginCheckout}
+                className="animate-pulse-glow block w-full bg-[#8cbc36] hover:bg-[#6e9628] text-white font-black text-base py-4 rounded-2xl text-center transition-all duration-200 hover:scale-[1.02] shadow-xl shadow-[#8cbc36]/30 tracking-wide"
+              >
+                {pkg.cta}
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </section>

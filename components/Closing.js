@@ -30,10 +30,10 @@ export default function Closing() {
       console.error("Error building checkout URL:", err);
     }
 
-    // Generate dynamic date (today or tomorrow)
+    // Generate dynamic date (today) formatted in Serbian (Latin)
     const d = new Date();
     setUrgencyDate(
-      d.toLocaleDateString("en-US", {
+      d.toLocaleDateString("sr-Latn", {
         weekday: "long",
         year: "numeric",
         month: "long",
